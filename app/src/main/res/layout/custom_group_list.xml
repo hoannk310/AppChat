@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/cardview_light_background"
+    app:contentPadding="3dp"
+    android:layout_marginTop="1dp">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/img_groupicon"
+        android:src="@drawable/ic_launcher_foreground"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:id="@+id/tv_name_gr"
+        android:layout_marginLeft="4dp"
+        android:text="Name Group"
+        android:layout_toEndOf="@id/img_groupicon"
+        android:textSize="20sp"
+        android:textColor="#000" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:id="@+id/tv_nameuser"
+        android:layout_marginLeft="4dp"
+        android:text="Group"
+        android:layout_below="@id/tv_name_gr"
+        android:layout_toEndOf="@id/img_groupicon"
+        android:textSize="18sp"
+        android:textColor="#000" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:id="@+id/tv_masage"
+        android:text="the message"
+        android:layout_below="@id/tv_name_gr"
+        android:layout_toEndOf="@id/tv_nameuser"
+        android:singleLine="true"
+        android:textSize="18sp"
+        android:textColor="#666262" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:id="@+id/tv_time"
+        android:text="the message"
+        android:layout_below="@id/tv_nameuser"
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:textColor="#666262" />
+
+</RelativeLayout>
+
+</androidx.cardview.widget.CardView>

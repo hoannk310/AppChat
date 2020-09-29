@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CallActivity">
+
+    <ImageView
+        android:id="@+id/img_calling"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/profile_image" />
+
+    <TextView
+        android:id="@+id/tv_name_callig"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_call"
+      android:gravity="center"
+        android:text="userName"
+        android:textColor="#000"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/tv_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linear_layout"
+        android:gravity="center"
+        android:layout_marginBottom="30dp"
+        android:text="Đang gọi..."
+        android:textColor="#000"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/make_call"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginRight="80dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_baseline_call_24" />
+        <ImageView
+            android:id="@+id/cancel_call"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_baseline_call_242" />
+    </LinearLayout>
+
+</RelativeLayout>

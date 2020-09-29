@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee"
+    android:padding="16dp"
+    android:orientation="vertical"
+    tools:context=".ActivitySettings">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        app:civ_border_color="@color/colorPrimary"
+        app:civ_border_width="5dp"
+        android:src="@drawable/profile_image"
+        android:id="@+id/profile_img"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center_horizontal"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edt_use_profile"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="26dp"
+        android:hint="Username"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/edit_status"
+        android:id="@+id/edt_status_profile"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:hint="hey,i am available now."
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="update"
+        android:id="@+id/btn_update"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="#fff"
+        android:layout_marginTop="10dp"/>
+
+</LinearLayout>

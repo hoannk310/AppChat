@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Trang Cá Nhân"
+        app:showAsAction="never"/>
+    <item android:id="@+id/menu_ffrient"
+        android:title="Tìm Bạn"
+        android:icon="@drawable/ic_baseline_person_add_24"
+        app:showAsAction="never"/>
+    <item android:id="@+id/menu_addgroup"
+        android:title="Tạo Nhóm"
+        android:icon="@drawable/ic_baseline_group_add_24"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_logout"
+        android:title="Đăng Xuất"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
+        app:showAsAction="never"/>
+
+</menu>

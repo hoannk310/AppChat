@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee"
+    android:gravity="center|top"
+
+    android:orientation="vertical"
+    tools:context=".GroupCreateActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:theme="@style/CardView.Dark"
+        app:popupTheme="@style/MenuStyle"
+        app:titleTextColor="#fff">
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_group"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/profile_image" />
+
+    <EditText
+        android:id="@+id/edt_name_group"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:padding="5dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="30dp"
+        android:background="#fff"
+        android:hint="Tên Nhóm" />
+
+    <EditText
+        android:id="@+id/edt_status_group"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:padding="5dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:background="#fff"
+        android:hint="Viết gì đó" />
+    <Button
+        android:id="@+id/btn_update_gr"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/colorPrimary"
+        android:textColor="#fff"
+        android:text="Sửa" />
+
+
+</LinearLayout>

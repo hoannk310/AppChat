@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".GroupInforActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:theme="@style/CardView.Dark"
+            app:popupTheme="@style/MenuStyle"
+            app:titleTextColor="#fff">
+        </androidx.appcompat.widget.Toolbar>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+            <ImageView
+                android:id="@+id/group_icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:adjustViewBounds="true"
+                android:minHeight="300dp"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/decription_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/create_gr"
+                android:background="#54000000"
+                android:padding="5dp"
+                android:paddingStart="2dp"
+                android:text="mo tả"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/create_gr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="#54000000"
+                android:padding="5dp"
+                android:paddingStart="2dp"
+                android:text="Create by ABC,on dd/mm/yyy"
+                android:textColor="#fff"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_edt_gr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:drawableStart="@drawable/ic_baseline_edit_24"
+            android:drawablePadding="10dp"
+            android:drawableTint="#000"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Chỉnh sửa"
+            android:textColor="#000" />
+
+
+        <TextView
+            android:id="@+id/tv_add_membergr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:drawableStart="@drawable/ic_baseline_person_add_24"
+            android:drawablePadding="10dp"
+            android:drawableTint="#000"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Thêm thành viên"
+            android:textColor="#000" />
+        <TextView
+            android:id="@+id/tv_media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:drawableStart="@drawable/ic_baseline_perm_media_24"
+            android:drawablePadding="10dp"
+            android:drawableTint="#000"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Kho ảnh"
+            android:textColor="#000" />
+
+
+        <TextView
+            android:id="@+id/tv_out_gr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:drawableStart="@drawable/ic_baseline_error_outline_24"
+            android:drawablePadding="10dp"
+            android:drawableTint="#000"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Rời nhóm"
+            android:textColor="#000" />
+
+
+        <TextView
+            android:id="@+id/tv_member"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:drawableStart="@drawable/ic_baseline_supervisor_account_24"
+
+            android:drawablePadding="10dp"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Thành viên (N)"
+            android:textColor="#000" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_group_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/custom_group_list" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

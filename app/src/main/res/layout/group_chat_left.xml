@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="100dp"
+    android:orientation="vertical"
+    android:layout_marginStart="10dp"
+    android:background="@drawable/custom_mesage"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tv_name_grc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="Name"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_mesage_grc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Tin nhắn "
+        android:textSize="18sp"
+        android:textColor="#000" />
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/message_picture_group"
+        android:scaleType="centerCrop"
+        android:src="@drawable/common_google_signin_btn_text_dark_normal_background"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="time"
+        android:textAlignment="textEnd"
+        android:gravity="end"
+        android:layout_marginEnd="5dp"
+        android:textSize="12dp"
+        android:id="@+id/time_chat_gr"/>
+
+</LinearLayout>
