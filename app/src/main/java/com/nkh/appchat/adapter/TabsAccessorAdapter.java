@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.nkh.appchat.fragment.ChatsFragment;
 import com.nkh.appchat.fragment.ContactsFragment;
 import com.nkh.appchat.fragment.GroupFragment;
+import com.nkh.appchat.fragment.PostFrament;
 import com.nkh.appchat.fragment.RequestsFragment;
 
 public class TabsAccessorAdapter extends FragmentPagerAdapter {
@@ -29,12 +30,14 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                return ChatsFragment.getINSTANCE();
+                return PostFrament.getINSTANCE();
             case 1:
-                return GroupFragment.getINSTANCE();
+                return ChatsFragment.getINSTANCE();
             case 2:
-                return ContactsFragment.getINSTANCE();
+                return GroupFragment.getINSTANCE();
             case 3:
+                return ContactsFragment.getINSTANCE();
+            case 4:
                 return RequestsFragment.getINSTANCE();
             default:
                 return null;
@@ -44,7 +47,7 @@ public class TabsAccessorAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 //
 //    @Nullable

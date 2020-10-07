@@ -124,32 +124,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myViewPager.setAdapter(tabsAccessorAdapter);
         bottomNav = findViewById(R.id.bottom_nav);
 
-        final String[] strings = {"Tin Nhắn", "Nhóm", "Danh Bạ", "Lời Mời"};
+        final String[] strings = {"Nhật Ký","Tin Nhắn", "Nhóm", "Danh Bạ", "Lời Mời"};
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.message_nav:
+                    case R.id.post_nav:
                         myViewPager.setCurrentItem(0);
                         tvFragment.setText(strings[0]);
                         item.setChecked(true);
                         break;
-                    case R.id.group_chat_nav:
+                    case R.id.message_nav:
                         myViewPager.setCurrentItem(1);
-                        item.setChecked(true);
                         tvFragment.setText(strings[1]);
+                        item.setChecked(true);
                         break;
-                    case R.id.contac_nav:
+                    case R.id.group_chat_nav:
                         myViewPager.setCurrentItem(2);
                         item.setChecked(true);
-
                         tvFragment.setText(strings[2]);
                         break;
-                    case R.id.addfr_nav:
+                    case R.id.contac_nav:
                         myViewPager.setCurrentItem(3);
                         item.setChecked(true);
 
                         tvFragment.setText(strings[3]);
+                        break;
+                    case R.id.addfr_nav:
+                        myViewPager.setCurrentItem(4);
+                        item.setChecked(true);
+                        tvFragment.setText(strings[4]);
                         break;
                 }
                 return false;

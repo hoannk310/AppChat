@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.PostFrament">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:theme="@style/CardView.Dark"
+            app:popupTheme="@style/MenuStyle"
+            app:titleTextColor="#fff">
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <EditText
+            android:id="@+id/edt_uptext"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="5dp"
+            android:hint="Bạn đang nghĩ gì ?"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/img_stt"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:visibility="gone" />
+
+
+        <Button
+            android:id="@+id/btn_upimage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:drawableLeft="@drawable/ic_baseline_image_24"
+            android:text="Ảnh" />
+
+        <Button
+            android:id="@+id/btn_post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Đăng" />
+
+    </LinearLayout>
+</ScrollView>

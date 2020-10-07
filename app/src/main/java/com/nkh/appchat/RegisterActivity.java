@@ -72,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void register(final String userName, String email, String password) {
+    private void register(final String userName, final String email, String password) {
         progressDialog.setTitle("Create New Account");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCanceledOnTouchOutside(true);
@@ -94,6 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
                     hashMap.put("userName", userName);
                     hashMap.put("imageURL", "default");
                     hashMap.put("status", setStatus);
+                    hashMap.put("email",email);
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
