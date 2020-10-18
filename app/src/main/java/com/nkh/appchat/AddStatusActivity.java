@@ -362,6 +362,7 @@ public class AddStatusActivity extends AppCompatActivity {
                         hashMap.put("uEmail", email);
                         hashMap.put("uDp", dp);
                         hashMap.put("pLikes", String.valueOf(0));
+                        hashMap.put("pComments", String.valueOf(0));
                         hashMap.put("pId", timeStamp);
                         hashMap.put("pDescr", status);
                         hashMap.put("pImage", downloadUri);
@@ -402,6 +403,7 @@ public class AddStatusActivity extends AppCompatActivity {
             hashMap.put("uDp", dp);
             hashMap.put("pId", timeStamp);
             hashMap.put("pLikes", String.valueOf(0));
+            hashMap.put("pComments", String.valueOf(0));
             hashMap.put("pDescr", status);
             hashMap.put("pImage", "noImage");
             hashMap.put("pTime", timeStamp);

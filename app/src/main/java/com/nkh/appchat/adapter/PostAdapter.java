@@ -33,6 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.nkh.appchat.ActivitySettings;
 import com.nkh.appchat.AddStatusActivity;
+import com.nkh.appchat.PostDetailActivity;
 import com.nkh.appchat.ProfileFriend;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Post;
@@ -79,6 +80,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final String pImage = arrPost.get(position).getpImage();
         String pTimeStamp = arrPost.get(position).getpTime();
         String pLikes = arrPost.get(position).getpLikes();
+        String pComments = arrPost.get(position).getpComments();
 
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTimeInMillis(Long.parseLong(pTimeStamp));
@@ -88,7 +90,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvTime.setText(pTime);
         holder.tvStatus.setText(pDesc);
         holder.tvNumLikes.setText(pLikes + " Thích");
-        setLikes(holder,pId);
+        holder.tvNumComments.setText(pComments + " Bình luận");
+        setLikes(holder, pId);
         try {
             Picasso.get().load(uDp).placeholder(R.drawable.profile_image).into(holder.imgProfile);
         } catch (Exception e) {
@@ -124,7 +127,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                                 postsRef.child(postIde).child("pLikes").setValue("" + (pLikes - 1));
                                 likeRef.child(postIde).child(myUid).removeValue();
                                 mProcessLike = false;
-                            }else {
+                            } else {
                                 postsRef.child(postIde).child("pLikes").setValue("" + (pLikes + 1));
                                 likeRef.child(postIde).child(myUid).setValue("Bỏ thích");
                                 mProcessLike = false;
@@ -143,7 +146,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvComments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(context, PostDetailActivity.class);
+                intent.putExtra("postId", pId);
+                context.startActivity(intent);
             }
         });
         holder.tvShares.setOnClickListener(new View.OnClickListener() {
@@ -176,11 +181,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         likeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(postKey).hasChild(myUid)){
-                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_24,0,0,0);
+                if (snapshot.child(postKey).hasChild(myUid)) {
+                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_24, 0, 0, 0);
                     holder.tvLikes.setText("Bỏ thích");
-                }else {
-                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_244,0,0,0);
+                } else {
+                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_244, 0, 0, 0);
                     holder.tvLikes.setText("Thích");
                 }
             }
@@ -193,30 +198,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     private void showMoreOptions(ImageView imgMore, String uid, String myUid, final String pId, final String pImage) {
-        PopupMenu popupMenu = new PopupMenu(context, imgMore, Gravity.END);
-        if (uid.equals(myUid)) {
-            popupMenu.getMenu().add(Menu.NONE, 0, 0, "Xóa");
-            popupMenu.getMenu().add(Menu.NONE, 1, 0, "Sửa");
-        }
-
-
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == 0) {
-                    beginDelete(pId, pImage);
-                } else if (id == 1) {
-                    Intent intent = new Intent(context, AddStatusActivity.class);
-                    intent.putExtra("key", "editPost");
-                    intent.putExtra("editPostId", pId);
-                    context.startActivity(intent);
-                }
-
-                return false;
+            PopupMenu popupMenu = new PopupMenu(context, imgMore, Gravity.END);
+            if (uid.equals(myUid)) {
+                popupMenu.getMenu().add(Menu.NONE, 0, 0, "Xóa");
+                popupMenu.getMenu().add(Menu.NONE, 1, 0, "Sửa");
             }
-        });
-        popupMenu.show();
+
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    int id = item.getItemId();
+                    if (id == 0) {
+                        beginDelete(pId, pImage);
+                    } else if (id == 1) {
+                        Intent intent = new Intent(context, AddStatusActivity.class);
+                        intent.putExtra("key", "editPost");
+                        intent.putExtra("editPostId", pId);
+                        context.startActivity(intent);
+                    }
+
+                    return false;
+                }
+            });
+            popupMenu.show();
     }
 
     private void beginDelete(String pId, String pImage) {
@@ -291,7 +296,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView imgProfile;
         ImageView imgStt, imgMore;
-        TextView tvName, tvTime, tvStatus, tvNumLikes, tvLikes, tvComments, tvShares;
+        TextView tvName, tvTime, tvStatus, tvNumLikes, tvLikes, tvComments, tvShares, tvNumComments;
         LinearLayout profileLayout;
 
         public ViewHolder(@NonNull View itemView) {
@@ -305,6 +310,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvStatus = itemView.findViewById(R.id.tv_stt);
             tvNumLikes = itemView.findViewById(R.id.tv_num_like);
             tvLikes = itemView.findViewById(R.id.tv_like);
+            tvNumComments = itemView.findViewById(R.id.tv_num_cmt);
             tvComments = itemView.findViewById(R.id.tv_comment);
             tvShares = itemView.findViewById(R.id.tv_share);
             profileLayout = itemView.findViewById(R.id.layou_profile);
