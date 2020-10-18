@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -47,11 +48,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private List<Post> arrPost;
     private Context context;
     private String myUid;
+    private DatabaseReference likeRef;
+    private DatabaseReference postsRef;
+    boolean mProcessLike = false;
 
     public PostAdapter(List<Post> arrPost, Context context) {
         this.arrPost = arrPost;
         this.context = context;
         myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        likeRef = FirebaseDatabase.getInstance().getReference().child("Likes");
+        postsRef = FirebaseDatabase.getInstance().getReference().child("Posts");
     }
 
     @NonNull
@@ -63,7 +69,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final String uid = arrPost.get(position).getUid();
         String uEmail = arrPost.get(position).getuEmail();
         String uName = arrPost.get(position).getuName();
@@ -72,8 +78,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         String pDesc = arrPost.get(position).getpDescr();
         final String pImage = arrPost.get(position).getpImage();
         String pTimeStamp = arrPost.get(position).getpTime();
+        String pLikes = arrPost.get(position).getpLikes();
 
-        Locale aLocale;
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTimeInMillis(Long.parseLong(pTimeStamp));
         String pTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
@@ -81,6 +87,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvName.setText(uName);
         holder.tvTime.setText(pTime);
         holder.tvStatus.setText(pDesc);
+        holder.tvNumLikes.setText(pLikes + " Thích");
+        setLikes(holder,pId);
         try {
             Picasso.get().load(uDp).placeholder(R.drawable.profile_image).into(holder.imgProfile);
         } catch (Exception e) {
@@ -105,6 +113,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvLikes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final int pLikes = Integer.parseInt(arrPost.get(position).getpLikes());
+                mProcessLike = true;
+                final String postIde = arrPost.get(position).getpId();
+                likeRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (mProcessLike) {
+                            if (snapshot.child(postIde).hasChild(myUid)) {
+                                postsRef.child(postIde).child("pLikes").setValue("" + (pLikes - 1));
+                                likeRef.child(postIde).child(myUid).removeValue();
+                                mProcessLike = false;
+                            }else {
+                                postsRef.child(postIde).child("pLikes").setValue("" + (pLikes + 1));
+                                likeRef.child(postIde).child(myUid).setValue("Bỏ thích");
+                                mProcessLike = false;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 
             }
         });
@@ -140,6 +172,26 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
     }
 
+    private void setLikes(final ViewHolder holder, final String postKey) {
+        likeRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child(postKey).hasChild(myUid)){
+                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_24,0,0,0);
+                    holder.tvLikes.setText("Bỏ thích");
+                }else {
+                    holder.tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_244,0,0,0);
+                    holder.tvLikes.setText("Thích");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void showMoreOptions(ImageView imgMore, String uid, String myUid, final String pId, final String pImage) {
         PopupMenu popupMenu = new PopupMenu(context, imgMore, Gravity.END);
         if (uid.equals(myUid)) {
@@ -154,11 +206,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 int id = item.getItemId();
                 if (id == 0) {
                     beginDelete(pId, pImage);
-                }
-                else if (id==1){
+                } else if (id == 1) {
                     Intent intent = new Intent(context, AddStatusActivity.class);
-                    intent.putExtra("key","editPost");
-                    intent.putExtra("editPostId",pId);
+                    intent.putExtra("key", "editPost");
+                    intent.putExtra("editPostId", pId);
                     context.startActivity(intent);
                 }
 

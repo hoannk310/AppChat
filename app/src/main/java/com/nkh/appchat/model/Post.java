@@ -2,7 +2,8 @@ package com.nkh.appchat.model;
 
 public class Post {
 
-    private String pId, pDescr, pImage, pTime, uid, uEmail, uDp, uName;
+    private String pId, pDescr, pImage, pTime, uid, uEmail, uDp, uName, pLikes;
+
     public String getpId() {
         return pId;
     }
@@ -67,10 +68,18 @@ public class Post {
         this.uName = uName;
     }
 
+    public String getpLikes() {
+        return pLikes;
+    }
+
+    public void setpLikes(String pLikes) {
+        this.pLikes = pLikes;
+    }
+
     public Post() {
     }
 
-    public Post(String pId, String pDescr, String pImage, String pTime, String uid, String uEmail, String uDp, String uName) {
+    public Post(String pId, String pDescr, String pImage, String pTime, String uid, String uEmail, String uDp, String uName, String pLikes) {
         this.pId = pId;
         this.pDescr = pDescr;
         this.pImage = pImage;
@@ -79,7 +88,6 @@ public class Post {
         this.uEmail = uEmail;
         this.uDp = uDp;
         this.uName = uName;
+        this.pLikes = pLikes;
     }
-
-
 }

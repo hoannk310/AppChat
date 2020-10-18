@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_baseline_thumb_up_24"
+                android:drawableLeft="@drawable/ic_baseline_thumb_up_244"
                 android:gravity="center"
                 android:id="@+id/tv_like"
                 android:text="Thích" />
