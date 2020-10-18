@@ -3,6 +3,8 @@ package com.nkh.appchat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,14 +33,19 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.nkh.appchat.adapter.PostAdapter;
+import com.nkh.appchat.model.Post;
 import com.nkh.appchat.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,6 +63,10 @@ public class ActivitySettings extends AppCompatActivity {
     private StorageReference storageReference;
     private static final int IMAGE_REQUEST = 1;
 
+    private RecyclerView rvSttPr;
+    private List<Post> arrPosts;
+    private PostAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +75,13 @@ public class ActivitySettings extends AppCompatActivity {
         edtUserName = findViewById(R.id.edt_use_profile);
         edtUserStatus = findViewById(R.id.edt_status_profile);
         imgProfile = findViewById(R.id.profile_img);
-        auth =FirebaseAuth.getInstance();
+        rvSttPr = findViewById(R.id.rv_stt_pr);
+        arrPosts = new ArrayList<>();
+        auth = FirebaseAuth.getInstance();
         currentUserId = auth.getCurrentUser().getUid();
         reference = FirebaseDatabase.getInstance().getReference();
+
+
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -103,6 +119,35 @@ public class ActivitySettings extends AppCompatActivity {
                 upLoadProfile();
             }
         });
+
+        loatMyPost();
+    }
+
+    private void loatMyPost() {
+        Context context;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        layoutManager.setReverseLayout(true);
+        rvSttPr.setLayoutManager(layoutManager);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
+        Query query = ref.orderByChild("uid").equalTo(currentUserId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrPosts.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Post post = dataSnapshot.getValue(Post.class);
+                    arrPosts.add(post);
+                    adapter = new PostAdapter(arrPosts, ActivitySettings.this);
+                    rvSttPr.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void upLoadProfile() {
@@ -111,22 +156,22 @@ public class ActivitySettings extends AppCompatActivity {
         progressDialog.show();
         String setUserName = edtUserName.getText().toString();
         String setStatus = edtUserStatus.getText().toString();
-        if (TextUtils.isEmpty(setStatus)){
+        if (TextUtils.isEmpty(setStatus)) {
             setStatus = "xin chào";
         }
-        if (TextUtils.isEmpty(setUserName)){
-            Toast.makeText(this,"Tên Không được để trống",Toast.LENGTH_SHORT).show();
-        }else{
+        if (TextUtils.isEmpty(setUserName)) {
+            Toast.makeText(this, "Tên Không được để trống", Toast.LENGTH_SHORT).show();
+        } else {
             reference = FirebaseDatabase.getInstance().getReference("Users").child(currentUserId);
             HashMap<String, Object> profileHash = new HashMap<>();
             profileHash.put("userName", setUserName);
             profileHash.put("status", setStatus);
-           reference.updateChildren(profileHash).addOnCompleteListener(new OnCompleteListener<Void>() {
+            reference.updateChildren(profileHash).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         progressDialog.dismiss();
-                        Toast.makeText(ActivitySettings.this,"đã cập nhập",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActivitySettings.this, "đã cập nhập", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -188,9 +233,9 @@ public class ActivitySettings extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            if (uploadTask!=null&&uploadTask.isInProgress()){
-                Toast.makeText(ActivitySettings.this,"Upload is preogress",Toast.LENGTH_SHORT).show();
-            }else {
+            if (uploadTask != null && uploadTask.isInProgress()) {
+                Toast.makeText(ActivitySettings.this, "Upload is preogress", Toast.LENGTH_SHORT).show();
+            } else {
                 uploadImage();
             }
         }

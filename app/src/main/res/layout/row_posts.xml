@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/layou_profile"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -96,7 +97,7 @@
                 android:drawableLeft="@drawable/ic_baseline_thumb_up_24"
                 android:gravity="center"
                 android:id="@+id/tv_like"
-                android:text="like" />
+                android:text="Thích" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -105,7 +106,7 @@
                 android:drawableLeft="@drawable/ic_baseline_comment_24"
                     android:id="@+id/tv_comment"
                 android:gravity="center"
-                android:text="like" />
+                android:text="Bình luận" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -114,7 +115,7 @@
                 android:drawableLeft="@drawable/ic_baseline_share_24"
                 android:id="@+id/tv_share"
                 android:gravity="center"
-                android:text="like" />
+                android:text="Chia sẻ" />
         </LinearLayout>
 
     </LinearLayout>

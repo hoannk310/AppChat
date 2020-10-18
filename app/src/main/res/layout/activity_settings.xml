@@ -1,52 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eee"
-    android:padding="16dp"
-    android:orientation="vertical"
-    tools:context=".ActivitySettings">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        app:civ_border_color="@color/colorPrimary"
-        app:civ_border_width="5dp"
-        android:src="@drawable/profile_image"
-        android:id="@+id/profile_img"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal"
-        />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/edt_use_profile"
-        android:inputType="textMultiLine"
-        android:layout_marginTop="20dp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:textSize="26dp"
-        android:hint="Username"
-        />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/edit_status"
-        android:id="@+id/edt_status_profile"
-        android:inputType="textMultiLine"
-        android:layout_marginTop="20dp"
-        android:textStyle="bold"
-        android:hint="hey,i am available now."
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="update"
-        android:id="@+id/btn_update"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="#fff"
-        android:layout_marginTop="10dp"/>
+    tools:context=".GroupInforActivity">
 
-</LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#eee"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".ActivitySettings">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_img"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/profile_image"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="5dp" />
+
+        <EditText
+            android:id="@+id/edt_use_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:hint="Username"
+            android:inputType="textMultiLine"
+            android:textSize="26dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/edt_status_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:drawableStart="@drawable/edit_status"
+            android:hint="hey,i am available now."
+            android:inputType="textMultiLine"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="update"
+            android:textColor="#fff" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_stt_pr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+

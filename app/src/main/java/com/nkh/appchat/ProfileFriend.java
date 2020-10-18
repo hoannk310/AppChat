@@ -3,6 +3,8 @@ package com.nkh.appchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +21,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nkh.appchat.adapter.PostAdapter;
+import com.nkh.appchat.model.Post;
 import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,6 +44,12 @@ public class ProfileFriend extends AppCompatActivity {
     private FirebaseAuth auth;
     private Toolbar toolbar;
 
+    private RecyclerView rvSttFr;
+
+    private List<Post>arrPosts;
+    private PostAdapter adapter;
+    private String uid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +59,8 @@ public class ProfileFriend extends AppCompatActivity {
         tvStatusFriend = findViewById(R.id.tv_status_friends);
         btnSendFriend = findViewById(R.id.btn_send);
         btnCancelFriend = findViewById(R.id.btn_cancel);
+        rvSttFr = findViewById(R.id.rv_stt_fr);
+        arrPosts = new ArrayList<>();
         btnSendMes = findViewById(R.id.btn_send_mes);
         btnSendMes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +108,34 @@ public class ProfileFriend extends AppCompatActivity {
 
             }
         });
+        loadFrPost();
 
+    }
+
+    private void loadFrPost() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
+        layoutManager.setReverseLayout(true);
+        rvSttFr.setLayoutManager(layoutManager);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
+        Query query = ref.orderByChild("uid").equalTo(userID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrPosts.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Post post = dataSnapshot.getValue(Post.class);
+                    arrPosts.add(post);
+                    adapter = new PostAdapter(arrPosts,ProfileFriend.this);
+                    rvSttFr.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void managerChatRequest() {
@@ -176,7 +218,7 @@ public class ProfileFriend extends AppCompatActivity {
                                 btnSendFriend.setEnabled(true);
                                 currentState = "new";
                                 btnSendFriend.setText("gửi lời mời kết bạn");
-                                btnCancelFriend.setVisibility(View.INVISIBLE);
+                                btnCancelFriend.setVisibility(View.GONE);
                                 btnCancelFriend.setEnabled(false);
                             }
                         }
@@ -206,7 +248,7 @@ public class ProfileFriend extends AppCompatActivity {
                                                         btnSendFriend.setEnabled(true);
                                                         currentState = "friends";
                                                         btnSendFriend.setText("xóa bạn");
-                                                        btnCancelFriend.setVisibility(View.INVISIBLE);
+                                                        btnCancelFriend.setVisibility(View.GONE);
                                                         btnCancelFriend.setEnabled(false);
                                                     }
                                                 }
@@ -235,7 +277,7 @@ public class ProfileFriend extends AppCompatActivity {
                                 btnSendFriend.setEnabled(true);
                                 currentState = "new";
                                 btnSendFriend.setText("gửi lời mời kết bạn");
-                                btnCancelFriend.setVisibility(View.INVISIBLE);
+                                btnCancelFriend.setVisibility(View.GONE);
                                 btnCancelFriend.setEnabled(false);
                             }
                         }

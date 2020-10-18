@@ -1,93 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eee"
-    tools:context=".ProfileFriend">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        android:theme="@style/CardView.Dark"
-        app:popupTheme="@style/MenuStyle"
-        app:titleTextColor="#fff">
 
-    </androidx.appcompat.widget.Toolbar>
+    tools:context=".GroupInforActivity">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@+id/toolbar"
-        android:src="@drawable/anhbia" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_friend"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="180dp"
-        android:src="@drawable/profile_image" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#eee"
+        android:orientation="vertical"
+        tools:context=".ProfileFriend">
 
-    <TextView
-        android:id="@+id/tv_name_friends"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/img_friend"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="user name"
-        android:textSize="20sp" />
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eee"
+            tools:context=".ProfileFriend">
 
-    <TextView
-        android:id="@+id/tv_status_friends"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_name_friends"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="Status"
-        android:textSize="20sp" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDark"
+                android:theme="@style/CardView.Dark"
+                app:popupTheme="@style/MenuStyle"
+                app:titleTextColor="#fff">
 
-    <Button
-        android:id="@+id/btn_send_mes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_status_friends"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp"
-        android:background="@color/colorPrimary"
-        android:text="gửi tin nhắn"
-        android:textColor="#fff"
-        android:textStyle="bold" />
-    <Button
-        android:id="@+id/btn_send"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btn_send_mes"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp"
-        android:background="@color/colorPrimary"
-        android:text="gửi lời mời kết bạn"
-        android:textColor="#fff"
-        android:textStyle="bold" />
-    <Button
-        android:id="@+id/btn_cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btn_send"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="50dp"
-        android:background="@color/colorPrimary"
-        android:text="hủy lời mòi kết bạn"
-        android:textColor="#fff"
-        android:visibility="invisible"
-        android:textStyle="bold" />
+            </androidx.appcompat.widget.Toolbar>
 
-</RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_below="@+id/toolbar"
+                android:src="@drawable/anhbia" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_friend"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="180dp"
+                android:src="@drawable/profile_image" />
+
+            <TextView
+                android:id="@+id/tv_name_friends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_friend"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="user name"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_status_friends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_name_friends"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Status"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/btn_send_mes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_status_friends"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorPrimary"
+                android:text="gửi tin nhắn"
+                android:textColor="#fff"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_send_mes"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorPrimary"
+                android:text="gửi lời mời kết bạn"
+                android:textColor="#fff"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/btn_send"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="50dp"
+                android:background="@color/colorPrimary"
+                android:text="hủy lời mòi kết bạn"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_stt_fr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

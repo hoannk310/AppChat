@@ -60,9 +60,10 @@ public class PostFrament extends Fragment {
     private FirebaseUser firebaseUser;
     private DatabaseReference reference;
     private RecyclerView rvStt;
-
-    private List<Post>arrPosts;
+    private String myId;
+    private List<Post> arrPosts;
     private PostAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,11 +71,11 @@ public class PostFrament extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
         ciProfile = view.findViewById(R.id.ci_profile);
         tvUpText = view.findViewById(R.id.tv_uptext);
-        btnUpImg  = view.findViewById(R.id.btn_upimage);
-
+        btnUpImg = view.findViewById(R.id.btn_upimage);
 
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        myId = FirebaseAuth.getInstance().getUid();
 
 
         rvStt = view.findViewById(R.id.rv_stt);
@@ -128,15 +129,16 @@ public class PostFrament extends Fragment {
     }
 
     private void LoadPost() {
-        DatabaseReference ref =  FirebaseDatabase.getInstance().getReference("Posts");
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arrPosts.clear();
-                for(DataSnapshot dataSnapshot:snapshot.getChildren()){
+                for (final DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Post post = dataSnapshot.getValue(Post.class);
                     arrPosts.add(post);
-                    adapter = new PostAdapter(arrPosts,getActivity());
+                    adapter = new PostAdapter(arrPosts, getActivity());
                     rvStt.setAdapter(adapter);
 
                 }
@@ -149,8 +151,9 @@ public class PostFrament extends Fragment {
             }
         });
     }
-    private void seachPosts(String searchQuery){
-        
+
+    private void seachPosts(String searchQuery) {
+
 
     }
 

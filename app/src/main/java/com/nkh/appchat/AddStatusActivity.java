@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -39,8 +41,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.nkh.appchat.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.Queue;
 
 public class AddStatusActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 100;
@@ -60,6 +65,7 @@ public class AddStatusActivity extends AppCompatActivity {
     private ImageView imgStt;
     private Uri imageUri = null;
     private String name, email, uid, dp;
+    private String editDescription, editImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +84,22 @@ public class AddStatusActivity extends AppCompatActivity {
                 finish();
             }
         });
+        edtStt = findViewById(R.id.edt_uptext);
+        btnUpStt = findViewById(R.id.btn_post);
+        btnUpImg = findViewById(R.id.btn_upimage);
+        imgStt = findViewById(R.id.img_stt);
 
+        Intent intent = getIntent();
+        final String isUpdateKey = "" + intent.getStringExtra("key");
+        final String editPostId = "" + intent.getStringExtra("editPostId");
+        if (isUpdateKey.equals("editPost")) {
+            getSupportActionBar().setTitle("Sửa");
+            btnUpStt.setText("Sửa");
+            loadPostData(editPostId);
+        } else {
+            getSupportActionBar().setTitle("Bài đăng");
+            btnUpStt.setText("Đăng");
+        }
 
         firebaseAuth = firebaseAuth.getInstance();
         uid = firebaseAuth.getUid();
@@ -99,10 +120,7 @@ public class AddStatusActivity extends AppCompatActivity {
 
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        edtStt = findViewById(R.id.edt_uptext);
-        btnUpStt = findViewById(R.id.btn_post);
-        btnUpImg = findViewById(R.id.btn_upimage);
-        imgStt = findViewById(R.id.img_stt);
+
 
         btnUpImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,64 +135,255 @@ public class AddStatusActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String status = edtStt.getText().toString().trim();
-                if (TextUtils.isEmpty(status)) {
+                if (TextUtils.isEmpty(status) && imageUri == null) {
                     Toast.makeText(AddStatusActivity.this, "Nội dung trống", Toast.LENGTH_SHORT).show();
 
                 }
-                if (imageUri == null) {
-                    upLoadData(status, "noImage");
+                if (isUpdateKey.equals("editPost")) {
+                    beginUpdate(status, editPostId);
                 } else {
-                    upLoadData(status, String.valueOf(imageUri));
+                    upLoadData(status);
                 }
+
 
             }
         });
 
     }
 
-    private void upLoadData(final String status, final String uri) {
+    private void beginUpdate(String status, String editPostId) {
         progressDialog.setMessage("Đăng tải...");
         progressDialog.show();
+        if (!editImage.equals("noImage")) {
+            updateWasWithImage(status, editPostId);
+        } else if (imgStt.getDrawable() != null) {
+            updateWihtNowImage(status, editPostId);
+        } else {
+            updateWihtOutImage(status, editPostId);
+        }
+    }
+
+    private void updateWihtOutImage(String status, String editPostId) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("uid", uid);
+        hashMap.put("uName", name);
+        hashMap.put("uEmail", email);
+        hashMap.put("uDp", dp);
+        hashMap.put("pDescr", status);
+        hashMap.put("pImage", "noImage");
+
+        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Posts");
+        reference1.child(editPostId).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                progressDialog.dismiss();
+                Toast.makeText(AddStatusActivity.this, "Đã sửa", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                progressDialog.dismiss();
+                Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateWihtNowImage(final String status, final String editPostId) {
         final String timeStamp = String.valueOf(System.currentTimeMillis());
         String filePathAndName = "Posts/" + "post_" + timeStamp;
-        if (!uri.equals("noImage")) {
 
-            StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
-            ref.putFile(Uri.parse(uri)).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                    while (!uriTask.isSuccessful());
-                        String downloadUri = "" + uriTask.getResult().toString();
+        Bitmap bitmap = ((BitmapDrawable) imgStt.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        StorageReference reference = FirebaseStorage.getInstance().getReference().child(filePathAndName);
+        reference.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isSuccessful()) ;
+
+                String downloadUrl = uriTask.getResult().toString();
+                if (uriTask.isSuccessful()) {
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("uid", uid);
+                    hashMap.put("uName", name);
+                    hashMap.put("uEmail", email);
+                    hashMap.put("uDp", dp);
+                    hashMap.put("pDescr", status);
+                    hashMap.put("pImage", downloadUrl);
+
+                    DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Posts");
+                    reference1.child(editPostId).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            progressDialog.dismiss();
+                            Toast.makeText(AddStatusActivity.this, "Đã sửa", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            progressDialog.dismiss();
+                            Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateWasWithImage(final String status, final String editPostId) {
+        StorageReference mPic = FirebaseStorage.getInstance().getReferenceFromUrl(editImage);
+        mPic.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                final String timeStamp = String.valueOf(System.currentTimeMillis());
+                String filePathAndName = "Posts/" + "post_" + timeStamp;
+
+                Bitmap bitmap = ((BitmapDrawable) imgStt.getDrawable()).getBitmap();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                StorageReference reference = FirebaseStorage.getInstance().getReference().child(filePathAndName);
+                reference.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                        while (!uriTask.isSuccessful()) ;
+
+                        String downloadUrl = uriTask.getResult().toString();
                         if (uriTask.isSuccessful()) {
-                            HashMap<Object, String> hashMap = new HashMap<>();
+                            HashMap<String, Object> hashMap = new HashMap<>();
                             hashMap.put("uid", uid);
                             hashMap.put("uName", name);
                             hashMap.put("uEmail", email);
                             hashMap.put("uDp", dp);
-                            hashMap.put("pId", timeStamp);
                             hashMap.put("pDescr", status);
-                            hashMap.put("pImage", downloadUri);
-                            hashMap.put("pTime", timeStamp);
+                            hashMap.put("pImage", downloadUrl);
+
                             DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Posts");
-                            reference1.child(timeStamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            reference1.child(editPostId).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(AddStatusActivity.this, "Đã đăng", Toast.LENGTH_SHORT).show();
 
-                                    edtStt.setText("");
-                                    imgStt.setImageURI(null);
-                                    imgStt.setVisibility(View.GONE);
-                                    imageUri = null;
+                                    progressDialog.dismiss();
+                                    Toast.makeText(AddStatusActivity.this, "Đã sửa", Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+
+                                    progressDialog.dismiss();
                                     Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void loadPostData(final String editPostId) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
+        Query query = databaseReference.orderByChild("pId").equalTo(editPostId);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    editDescription = "" + dataSnapshot.child("pDescr").getValue();
+                    editImage = "" + dataSnapshot.child("pImage").getValue();
+                    edtStt.setText(editDescription);
+                    if (!editImage.equals("noImage")) {
+                        try {
+                            Picasso.get().load(editImage).into(imgStt);
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void upLoadData(final String status) {
+        progressDialog.setMessage("Đăng tải...");
+        progressDialog.show();
+        final String timeStamp = String.valueOf(System.currentTimeMillis());
+        String filePathAndName = "Posts/" + "post_" + timeStamp;
+        if (imgStt.getDrawable() != null) {
+
+            Bitmap bitmap = ((BitmapDrawable) imgStt.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
+            ref.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while (!uriTask.isSuccessful()) ;
+                    String downloadUri = "" + uriTask.getResult().toString();
+                    if (uriTask.isSuccessful()) {
+                        HashMap<Object, String> hashMap = new HashMap<>();
+                        hashMap.put("uid", uid);
+                        hashMap.put("uName", name);
+                        hashMap.put("uEmail", email);
+                        hashMap.put("uDp", dp);
+                        hashMap.put("pId", timeStamp);
+                        hashMap.put("pDescr", status);
+                        hashMap.put("pImage", downloadUri);
+                        hashMap.put("pTime", timeStamp);
+                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference("Posts");
+                        reference1.child(timeStamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                progressDialog.dismiss();
+                                Toast.makeText(AddStatusActivity.this, "Đã đăng", Toast.LENGTH_SHORT).show();
+
+                                edtStt.setText("");
+                                imgStt.setImageURI(null);
+                                imgStt.setVisibility(View.GONE);
+                                imageUri = null;
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(AddStatusActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
