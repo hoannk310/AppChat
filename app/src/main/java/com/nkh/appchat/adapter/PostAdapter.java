@@ -37,6 +37,7 @@ import com.nkh.appchat.PostDetailActivity;
 import com.nkh.appchat.ProfileFriend;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Post;
+import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -71,6 +72,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        Post post = arrPost.get(position);
         final String uid = arrPost.get(position).getUid();
         String uEmail = arrPost.get(position).getuEmail();
         String uName = arrPost.get(position).getuName();
@@ -86,17 +88,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         calendar.setTimeInMillis(Long.parseLong(pTimeStamp));
         String pTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
 
-        holder.tvName.setText(uName);
+
         holder.tvTime.setText(pTime);
         holder.tvStatus.setText(pDesc);
         holder.tvNumLikes.setText(pLikes + " Thích");
         holder.tvNumComments.setText(pComments + " Bình luận");
-        setLikes(holder, pId);
-        try {
-            Picasso.get().load(uDp).placeholder(R.drawable.profile_image).into(holder.imgProfile);
-        } catch (Exception e) {
 
-        }
+        setLikes(holder, pId);
+        setUser(holder,post);
         if (pImage.equals("noImage")) {
             holder.imgStt.setVisibility(View.GONE);
         } else {
@@ -173,6 +172,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
                     context.startActivity(intent);
                 }
+            }
+        });
+    }
+
+    private void setUser(final ViewHolder holder, Post post) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.orderByChild("id").equalTo(post.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String name  =""+ dataSnapshot.child("userName").getValue();
+                    String img =""+ dataSnapshot.child("imageURL").getValue();
+                    try {
+                        Picasso.get().load(img).placeholder(R.drawable.profile_image).into(holder.imgProfile);
+                    } catch (Exception e) {
+
+                    }
+                    holder.tvName.setText(name);
+                }
+
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

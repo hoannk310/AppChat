@@ -77,7 +77,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
     private void loadLastMessage(Group group, final ViewHolder holder) {
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Groups");
-        reference.child(group.getGroupId()).child("Messages").limitToFirst(1).addValueEventListener(new ValueEventListener() {
+          reference.child(group.getGroupId()).child("Messages").limitToFirst(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

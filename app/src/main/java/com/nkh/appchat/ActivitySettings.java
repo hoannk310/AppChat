@@ -95,7 +95,10 @@ public class ActivitySettings extends AppCompatActivity {
                 if (user.getImageURL().equals("default")) {
                     imgProfile.setImageResource(R.drawable.profile_image);
                 } else {
-                    Glide.with(ActivitySettings.this).load(user.getImageURL()).into(imgProfile);
+                    try {
+                        Glide.with(ActivitySettings.this).load(user.getImageURL()).into(imgProfile);
+                    } catch (Exception e) {
+                    }
                 }
             }
 

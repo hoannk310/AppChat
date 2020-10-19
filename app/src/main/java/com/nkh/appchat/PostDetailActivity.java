@@ -3,8 +3,11 @@ package com.nkh.appchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,10 +35,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.nkh.appchat.adapter.CommentAdapter;
+import com.nkh.appchat.model.Comment;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 
@@ -54,10 +61,14 @@ public class PostDetailActivity extends AppCompatActivity {
     private ImageView imgSendCmt;
     private EditText edtSendCmt;
 
+
     CircleImageView imgProfile;
     ImageView imgStt, imgMore;
     TextView tvName, tvTime, tvStatus, tvNumLikes, tvLikes, tvNumComments, tvShares;
     LinearLayout profileLayout;
+    RecyclerView rvCmtList;
+    List<Comment>arrComments;
+    CommentAdapter adapter;
 
 
     @Override
@@ -77,6 +88,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+
 
 
         Intent intent = getIntent();
@@ -101,11 +113,13 @@ public class PostDetailActivity extends AppCompatActivity {
         tvLikes = findViewById(R.id.tv_like);
         tvShares = findViewById(R.id.tv_share);
         profileLayout = findViewById(R.id.layou_profile);
+        rvCmtList = findViewById(R.id.rv_cmt);
 
 
         loadPostInfor();
         loadUserInfor();
         setLike();
+        loadComment();
 
         imgSendCmt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +138,31 @@ public class PostDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showMoreOptions();
+            }
+        });
+    }
+
+    private void loadComment() {
+        Context context;
+        LinearLayoutManager linearLayoutManager  = new LinearLayoutManager(getApplicationContext());
+        rvCmtList.setLayoutManager(linearLayoutManager);
+        arrComments = new ArrayList<>();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postId).child("Comments");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+           arrComments.clear();
+           for (DataSnapshot dataSnapshot:snapshot.getChildren()){
+               Comment comment = dataSnapshot.getValue(Comment.class);
+               arrComments.add(comment);
+               adapter = new CommentAdapter(arrComments, getApplicationContext());
+               rvCmtList.setAdapter(adapter);
+           }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
