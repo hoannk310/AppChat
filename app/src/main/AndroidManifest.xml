@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PostDetailActivity"></activity>
+        <activity android:name=".PostLikeActivity"></activity>
+        <activity android:name=".NotificationActitvity" />
+        <activity android:name=".PostDetailActivity" />
         <activity android:name=".AddStatusActivity" />
         <activity android:name=".ResetPassActivity" />
         <activity android:name=".MediaGroupActivity" />

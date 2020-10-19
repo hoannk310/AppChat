@@ -1,15 +1,25 @@
 package com.nkh.appchat.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Comment;
 import com.squareup.picasso.Picasso;
@@ -23,10 +33,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
     private List<Comment> arrComments;
     private Context context;
+    private String myUid, postId;
 
-    public CommentAdapter(List<Comment> arrComments, Context context) {
+    public CommentAdapter(List<Comment> arrComments, Context context, String myUid, String postId) {
         this.arrComments = arrComments;
         this.context = context;
+        this.myUid = myUid;
+        this.postId = postId;
     }
 
     @NonNull
@@ -39,11 +52,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        String uid = arrComments.get(position).getUid();
+        final String uid = arrComments.get(position).getUid();
         String name = arrComments.get(position).getuName();
         String email = arrComments.get(position).getuEmail();
         String image = arrComments.get(position).getuDp();
-        String cid = arrComments.get(position).getcId();
+        final String cid = arrComments.get(position).getcId();
         String comment = arrComments.get(position).getComment();
         String timestamp = arrComments.get(position).getTimestamp();
 
@@ -60,8 +73,56 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             Picasso.get().load(image).placeholder(R.drawable.profile_image).into(holder.ciAvtCmt);
         } catch (Exception e) {
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myUid.equals(uid)) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(v.getRootView().getContext());
+                    builder.setTitle("Xóa");
+                    builder.setMessage("Bạn có chắc chắn muốn xóa");
+                    builder.setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteComment(cid);
+                        }
+                    });
+                    builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    Button button = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    Button button2 = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                    button.setTextColor(Color.BLACK);
+                    button2.setTextColor(Color.BLACK);
+                } else {
+                    Toast.makeText(context, "Không thể xóa", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
+    }
+
+    private void deleteComment(String cid) {
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postId);
+        reference.child("Comments").child(cid).removeValue();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String comments = "" + snapshot.child("pComments").getValue();
+                int newCommentCount = Integer.parseInt(comments) - 1;
+                reference.child("pComments").setValue("" + newCommentCount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override

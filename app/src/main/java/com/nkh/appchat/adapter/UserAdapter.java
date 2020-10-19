@@ -39,6 +39,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull UserAdapter.ViewHolder holder, int position) {
         User user = arrUsers.get(position);
         holder.tvUserName.setText(user.getUserName());
+        holder.tvEmail.setText(user.getEmail());
         Picasso.get().load(user.getImageURL()).placeholder(R.drawable.profile_image).into(holder.ciProfile);
     }
 
@@ -48,13 +49,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvUserName;
+        TextView tvUserName, tvEmail;
         CircleImageView ciProfile;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvUserName = itemView.findViewById(R.id.tv_user_find);
-
+            tvEmail = itemView.findViewById(R.id.tv_status_find);
             ciProfile = itemView.findViewById(R.id.ci_users_profile);
         }
     }

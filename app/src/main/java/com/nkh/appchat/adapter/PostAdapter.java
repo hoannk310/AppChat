@@ -34,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.nkh.appchat.ActivitySettings;
 import com.nkh.appchat.AddStatusActivity;
 import com.nkh.appchat.PostDetailActivity;
+import com.nkh.appchat.PostLikeActivity;
 import com.nkh.appchat.ProfileFriend;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Post;
@@ -41,6 +42,7 @@ import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -95,7 +97,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvNumComments.setText(pComments + " Bình luận");
 
         setLikes(holder, pId);
-        setUser(holder,post);
+        setUser(holder, post);
         if (pImage.equals("noImage")) {
             holder.imgStt.setVisibility(View.GONE);
         } else {
@@ -130,6 +132,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                                 postsRef.child(postIde).child("pLikes").setValue("" + (pLikes + 1));
                                 likeRef.child(postIde).child(myUid).setValue("Bỏ thích");
                                 mProcessLike = false;
+                                addToHisNotifications(""+uid,""+pId,"Thích bài viết của bạn");
                             }
                         }
                     }
@@ -174,6 +177,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 }
             }
         });
+        holder.tvNumLikes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PostLikeActivity.class);
+                intent.putExtra("postId", pId);
+                context.startActivity(intent);
+            }
+        });
     }
 
     private void setUser(final ViewHolder holder, Post post) {
@@ -182,8 +193,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String name  =""+ dataSnapshot.child("userName").getValue();
-                    String img =""+ dataSnapshot.child("imageURL").getValue();
+                    String name = "" + dataSnapshot.child("userName").getValue();
+                    String img = "" + dataSnapshot.child("imageURL").getValue();
                     try {
                         Picasso.get().load(img).placeholder(R.drawable.profile_image).into(holder.imgProfile);
                     } catch (Exception e) {
@@ -223,31 +234,54 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         });
     }
 
-    private void showMoreOptions(ImageView imgMore, String uid, String myUid, final String pId, final String pImage) {
-            PopupMenu popupMenu = new PopupMenu(context, imgMore, Gravity.END);
-            if (uid.equals(myUid)) {
-                popupMenu.getMenu().add(Menu.NONE, 0, 0, "Xóa");
-                popupMenu.getMenu().add(Menu.NONE, 1, 0, "Sửa");
+    private void addToHisNotifications(String hisUid, String pId, String notification) {
+        String timestamp = "" + System.currentTimeMillis();
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUid", hisUid);
+        hashMap.put("notification", notification);
+        hashMap.put("sUid", myUid);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(hisUid).child("Notifications").child(timestamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    private void showMoreOptions(ImageView imgMore, String uid, String myUid, final String pId, final String pImage) {
+        PopupMenu popupMenu = new PopupMenu(context, imgMore, Gravity.END);
+        if (uid.equals(myUid)) {
+            popupMenu.getMenu().add(Menu.NONE, 0, 0, "Xóa");
+            popupMenu.getMenu().add(Menu.NONE, 1, 0, "Sửa");
+        }
 
 
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    int id = item.getItemId();
-                    if (id == 0) {
-                        beginDelete(pId, pImage);
-                    } else if (id == 1) {
-                        Intent intent = new Intent(context, AddStatusActivity.class);
-                        intent.putExtra("key", "editPost");
-                        intent.putExtra("editPostId", pId);
-                        context.startActivity(intent);
-                    }
-
-                    return false;
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == 0) {
+                    beginDelete(pId, pImage);
+                } else if (id == 1) {
+                    Intent intent = new Intent(context, AddStatusActivity.class);
+                    intent.putExtra("key", "editPost");
+                    intent.putExtra("editPostId", pId);
+                    context.startActivity(intent);
                 }
-            });
-            popupMenu.show();
+
+                return false;
+            }
+        });
+        popupMenu.show();
     }
 
     private void beginDelete(String pId, String pImage) {

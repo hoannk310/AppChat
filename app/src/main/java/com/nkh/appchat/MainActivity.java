@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CircleImageView profileImage, navImage;
     FirebaseUser firebaseUser;
     TextView tvUser, tvStatus, tvFragment;
-    ImageView addFr, addGr;
+    ImageView addFr, addGr, notifiCmt;
     DatabaseReference reference;
     private ViewPager myViewPager;
     private BottomNavigationView bottomNav;
@@ -123,8 +123,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
         myViewPager.setAdapter(tabsAccessorAdapter);
         bottomNav = findViewById(R.id.bottom_nav);
-
-        final String[] strings = {"Nhật Ký","Tin Nhắn", "Nhóm", "Danh Bạ", "Lời Mời"};
+        notifiCmt = findViewById(R.id.add_noti);
+        notifiCmt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, NotificationActitvity.class));
+            }
+        });
+        final String[] strings = {"Nhật Ký", "Tin Nhắn", "Nhóm", "Danh Bạ", "Lời Mời"};
         bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -271,8 +277,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("ringing")) {
                     calledBy = snapshot.child("ringing").getValue().toString();
-                    Intent intent = new Intent(MainActivity.this,CallActivity.class);
-                    intent.putExtra("userid",calledBy);
+                    Intent intent = new Intent(MainActivity.this, CallActivity.class);
+                    intent.putExtra("userid", calledBy);
                     startActivity(intent);
                 }
             }

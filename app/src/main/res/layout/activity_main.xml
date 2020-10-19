@@ -50,18 +50,27 @@
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/add_friend"
+                    android:id="@+id/add_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="30dp"
+                    android:src="@drawable/ic_baseline_group_add_24" />
+
+
+                <ImageView
+                    android:id="@+id/add_friend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                   android:layout_alignEnd="@+id/add_group"
+                    android:layout_marginEnd="40dp"
                     android:src="@drawable/ic_baseline_person_add_24" />
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:id="@+id/add_group"
+                    android:id="@+id/add_noti"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_group_add_24"
+                    android:src="@drawable/ic_baseline_notifications_24"
                     android:layout_alignEnd="@+id/add_friend"
                     android:layout_marginEnd="45dp"
                     />

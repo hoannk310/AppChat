@@ -67,7 +67,7 @@ public class PostDetailActivity extends AppCompatActivity {
     TextView tvName, tvTime, tvStatus, tvNumLikes, tvLikes, tvNumComments, tvShares;
     LinearLayout profileLayout;
     RecyclerView rvCmtList;
-    List<Comment>arrComments;
+    List<Comment> arrComments;
     CommentAdapter adapter;
 
 
@@ -88,7 +88,6 @@ public class PostDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
-
 
 
         Intent intent = getIntent();
@@ -140,24 +139,32 @@ public class PostDetailActivity extends AppCompatActivity {
                 showMoreOptions();
             }
         });
+        tvNumLikes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PostDetailActivity.this, PostLikeActivity.class);
+                intent.putExtra("postId", postId);
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadComment() {
         Context context;
-        LinearLayoutManager linearLayoutManager  = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         rvCmtList.setLayoutManager(linearLayoutManager);
         arrComments = new ArrayList<>();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts").child(postId).child("Comments");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-           arrComments.clear();
-           for (DataSnapshot dataSnapshot:snapshot.getChildren()){
-               Comment comment = dataSnapshot.getValue(Comment.class);
-               arrComments.add(comment);
-               adapter = new CommentAdapter(arrComments, getApplicationContext());
-               rvCmtList.setAdapter(adapter);
-           }
+                arrComments.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Comment comment = dataSnapshot.getValue(Comment.class);
+                    arrComments.add(comment);
+                    adapter = new CommentAdapter(arrComments, getApplicationContext(), myUid, postId);
+                    rvCmtList.setAdapter(adapter);
+                }
             }
 
             @Override
@@ -301,6 +308,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
                         tvLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_thumb_up_24, 0, 0, 0);
                         tvLikes.setText("Bỏ thích");
+                        addToHisNotifications("" + hisId, "" + postId, "Thích bài đăng của bạn");
                     }
                 }
             }
@@ -337,6 +345,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
                 edtSendCmt.setText("");
                 updateCommentCount();
+                addToHisNotifications("" + hisId, "" + postId, "Bình luận bài viết của bạn");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -358,6 +367,7 @@ public class PostDetailActivity extends AppCompatActivity {
                     int newCommentCount = Integer.parseInt(comments) + 1;
                     reference.child("pComments").setValue("" + newCommentCount);
                     mProcessComment = false;
+
                 }
             }
 
@@ -441,6 +451,29 @@ public class PostDetailActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void addToHisNotifications(String hisUid, String pId, String notification) {
+        String timestamp = "" + System.currentTimeMillis();
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUid", hisUid);
+        hashMap.put("notification", notification);
+        hashMap.put("sUid", myUid);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(hisUid).child("Notifications").child(timestamp).setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
 
             }
         });
