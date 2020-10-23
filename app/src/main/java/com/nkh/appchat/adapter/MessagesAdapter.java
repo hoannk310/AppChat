@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nkh.appchat.R;
+import com.nkh.appchat.TrackingActivity;
 import com.nkh.appchat.model.Messages;
 import com.squareup.picasso.Picasso;
 
@@ -35,8 +36,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private FirebaseAuth auth;
     private DatabaseReference reference;
 
-    public MessagesAdapter(List<Messages> arrMessages) {
+    public MessagesAdapter(List<Messages> arrMessages, Context context) {
         this.arrMessages = arrMessages;
+        this.context = context;
     }
 
     @NonNull
@@ -53,6 +55,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         Messages messages = arrMessages.get(position);
         String fromUserID = messages.getFrom();
         String fromMessageType = messages.getType();
+        final String mes = messages.getMessage();
         reference = FirebaseDatabase.getInstance().getReference().child("Users").child(fromUserID);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,7 +176,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                     });
                 }
                 break;
-            default:
+            case "docx":
                 if (fromUserID.equals(messageSenderID)) {
                     holder.linearLayoutSend.setVisibility(View.VISIBLE);
                     holder.messageSenderPicture.setVisibility(View.VISIBLE);
@@ -191,7 +194,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                     holder.linearLayoutRece.setVisibility(View.VISIBLE);
                     holder.receiveCircleImageView.setVisibility(View.VISIBLE);
                     holder.messageReceiverPicture.setVisibility(View.VISIBLE);
-
                     holder.tvTimeReceive.setText(messages.getTime() + " " + messages.getDate());
                     holder.messageReceiverPicture.setBackgroundResource(R.drawable.word);
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -204,6 +206,40 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                 }
 
                 break;
+
+            default:
+                if (fromUserID.equals(messageSenderID)) {
+                    holder.linearLayoutSend.setVisibility(View.VISIBLE);
+                    holder.messageSenderPicture.setVisibility(View.VISIBLE);
+                    holder.messageSenderPicture.setBackgroundResource(R.drawable.iconfinder_google_4975305);
+                    holder.tvTimeReceive.setVisibility(View.VISIBLE);
+                    holder.tvTimeSend.setVisibility(View.INVISIBLE);
+                    holder.tvTimeReceive.setText(messages.getTime() + " " + messages.getDate());
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, TrackingActivity.class);
+                            intent.putExtra("location", mes);
+                            holder.itemView.getContext().startActivity(intent);
+                        }
+                    });
+                } else {
+                    holder.linearLayoutRece.setVisibility(View.VISIBLE);
+                    holder.receiveCircleImageView.setVisibility(View.VISIBLE);
+                    holder.messageReceiverPicture.setVisibility(View.VISIBLE);
+                    holder.tvTimeReceive.setText(messages.getTime() + " " + messages.getDate());
+                    holder.messageReceiverPicture.setBackgroundResource(R.drawable.iconfinder_google_4975305);
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, TrackingActivity.class);
+                            intent.putExtra("location", mes);
+                            holder.itemView.getContext().startActivity(intent);
+                        }
+                    });
+                }
+                break;
+
         }
 
     }

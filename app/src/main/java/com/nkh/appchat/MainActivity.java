@@ -1,17 +1,22 @@
 package com.nkh.appchat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,6 +31,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.Builder;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -39,6 +52,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nkh.appchat.adapter.TabsAccessorAdapter;
+import com.nkh.appchat.model.Tracking;
 import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;
 
@@ -48,12 +62,24 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    private static final int MY_PERMISSION_REQUEST_CODE = 7171;
+    private static final int PLAY_SERVICES_RES_REQUEST = 7172;
+    private static final int UPDATE_INTERVAL = 5000;
+    private static final int FASTEST_INTERVAL = 1000;
+    private static final int DISTANCE = 10;
+
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mgGoogleApiClient;
+    private Location mLastLocation;
+
+
     CircleImageView profileImage, navImage;
     FirebaseUser firebaseUser;
     TextView tvUser, tvStatus, tvFragment;
     ImageView addFr, addGr, notifiCmt;
-    DatabaseReference reference;
+    DatabaseReference reference, locationReference;
     private ViewPager myViewPager;
     private BottomNavigationView bottomNav;
     private TabsAccessorAdapter tabsAccessorAdapter;
@@ -71,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         utilsActivity();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        locationReference = FirebaseDatabase.getInstance().getReference("Locations");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -96,8 +123,79 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_REQUEST_CODE);
+        } else {
+            if (checkPlayServices()) {
+                buildGoogleApiClient();
+                createLocationRequest();
+                displayLocation();
+            }
+        }
     }
 
+    private void displayLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mgGoogleApiClient);
+        if (mLastLocation != null) {
+            locationReference.child(firebaseUser.getUid()).setValue(new Tracking(firebaseUser.getUid(),
+                    String.valueOf(mLastLocation.getLatitude()), String.valueOf(mLastLocation.getLongitude())));
+
+        } else {
+            Toast.makeText(this, "hihi1", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createLocationRequest() {
+
+       mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(DISTANCE);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+    }
+
+    private void buildGoogleApiClient() {
+
+        mgGoogleApiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+        mgGoogleApiClient.connect();
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RES_REQUEST).show();
+            } else {
+                Toast.makeText(this, "hihi2", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    if (checkPlayServices()){
+                        buildGoogleApiClient();
+                        createLocationRequest();
+                        displayLocation();
+                    }
+                }
+            }
+        }
+    }
 
     private void utilsActivity() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -266,6 +364,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             updateUserStatus("online");
         }
         checkForRecevingCall();
+        if (mgGoogleApiClient != null) {
+            mgGoogleApiClient.connect();
+        }
 
 
     }
@@ -298,6 +399,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         }
+        if (mgGoogleApiClient != null) {
+            mgGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -308,4 +412,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        displayLocation();
+    }
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        displayLocation();
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mgGoogleApiClient, mLocationRequest, this );
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mgGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }

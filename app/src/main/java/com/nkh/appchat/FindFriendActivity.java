@@ -32,9 +32,8 @@ public class FindFriendActivity extends AppCompatActivity {
     private RecyclerView rvFindFriends;
     private FindFriendAdapter adapter;
     private FirebaseAuth auth;
-    private List<User>arrUsers;
+    private List<User> arrUsers;
     private EditText edtSeach;
-
 
 
     @Override
@@ -74,53 +73,52 @@ public class FindFriendActivity extends AppCompatActivity {
 
         rvFindFriends = findViewById(R.id.rv_find_friend);
         rvFindFriends.setLayoutManager(new LinearLayoutManager(this));
-        arrUsers =new ArrayList<>();
+        arrUsers = new ArrayList<>();
 
-      DatabaseReference  reference = FirebaseDatabase.getInstance().getReference().child("Users");
-         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-         reference.addValueEventListener(new ValueEventListener() {
-             @Override
-             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                 if (edtSeach.getText().toString().equals("")) {
-                     arrUsers.clear();
-                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                         User user = dataSnapshot.getValue(User.class);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (edtSeach.getText().toString().equals("")) {
+                    arrUsers.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        User user = dataSnapshot.getValue(User.class);
 
-                         if (!user.getId().equals(firebaseUser.getUid())) {
-                             arrUsers.add(user);
-                         }
+                        if (user.getId() != null && !user.getId().equals(firebaseUser.getUid())) {
+                            arrUsers.add(user);
+                        }
 
-                     }
-                     adapter = new FindFriendAdapter(FindFriendActivity.this, arrUsers);
-                     rvFindFriends.setAdapter(adapter);
-                     adapter.notifyDataSetChanged();
-                 }
-             }
+                    }
+                    adapter = new FindFriendAdapter(FindFriendActivity.this, arrUsers);
+                    rvFindFriends.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+            }
 
-             @Override
-             public void onCancelled(@NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-             }
-         });
-
+            }
+        });
 
 
     }
 
     private void seachUser(String toString) {
-        final FirebaseUser firebaseUser =  FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("userName").startAt(toString).endAt(toString+"\uf8ff");
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        Query query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("userName").startAt(toString).endAt(toString + "\uf8ff");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arrUsers.clear();
-                for (DataSnapshot dataSnapshot :snapshot.getChildren()){
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-                    if(!user.getId().equals(firebaseUser.getUid())){
+                    if (user.getId() != null && !user.getId().equals(firebaseUser.getUid())) {
                         arrUsers.add(user);
                     }
                 }
-                adapter = new FindFriendAdapter(FindFriendActivity.this,arrUsers);
+                adapter = new FindFriendAdapter(FindFriendActivity.this, arrUsers);
                 rvFindFriends.setAdapter(adapter);
             }
 

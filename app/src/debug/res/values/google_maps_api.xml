@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=5F:FE:14:91:75:19:F5:9E:9F:2A:C6:B1:A9:90:86:15:A5:AC:3A:6A%3Bcom.nkh.appchat
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.nkh.appchat
+
+    SHA-1 certificate fingerprint:
+    5F:FE:14:91:75:19:F5:9E:9F:2A:C6:B1:A9:90:86:15:A5:AC:3A:6A
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDDgYUTEkSahevYLV7-KBxxsbpL-3CexZM</string>
+</resources>

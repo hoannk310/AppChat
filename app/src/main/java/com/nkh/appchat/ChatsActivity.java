@@ -13,10 +13,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,6 +48,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.nkh.appchat.adapter.MessagesAdapter;
 import com.nkh.appchat.model.Messages;
+import com.nkh.appchat.model.Tracking;
 import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;
 
@@ -55,7 +61,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatsActivity extends AppCompatActivity {
+public class ChatsActivity extends AppCompatActivity{
     private String messageReceiverID, userName, userImage, messageSenderID;
     private TextView chatName, chatLastSeen, chatSent;
     private FirebaseAuth auth;
@@ -76,6 +82,8 @@ public class ChatsActivity extends AppCompatActivity {
     private DatabaseReference referenceSeen;
     private Uri fileUri;
     private ValueEventListener seenLisener;
+    private LocationManager locationManager;
+    private String myLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +108,7 @@ public class ChatsActivity extends AppCompatActivity {
         SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
         saveCurrentTime = currentTime.format(calendar.getTime());
         progressDialog = new ProgressDialog(this);
+
 
         imgMedia.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +174,8 @@ public class ChatsActivity extends AppCompatActivity {
                 CharSequence options[] = new CharSequence[]{
                         "Ảnh",
                         "Tệp PDF",
-                        "Tệp Word"
+                        "Tệp Word",
+                        "Vị trí"
                 };
                 Context context;
                 AlertDialog.Builder builder = new AlertDialog.Builder(ChatsActivity.this);
@@ -195,6 +205,10 @@ public class ChatsActivity extends AppCompatActivity {
                             startActivityForResult(intent.createChooser(intent, "Chọn tệp"), 420);
 
                         }
+                        if (which == 3) {
+                            checker = "location";
+                                sendLocation();
+                        }
 
 
                     }
@@ -213,7 +227,7 @@ public class ChatsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        messagesAdapter = new MessagesAdapter(arrMessage);
+        messagesAdapter = new MessagesAdapter(arrMessage,ChatsActivity.this);
         rvChatsLayout = findViewById(R.id.rv_chat_layout);
         Context context;
         linearLayoutManager = new LinearLayoutManager(this);
@@ -251,6 +265,68 @@ public class ChatsActivity extends AppCompatActivity {
         });
 
     }
+
+    private void sendLocation() {
+
+        DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("Locations");
+
+        locationRef.child(messageSenderID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String lat = snapshot.child("lat").getValue().toString();
+                String lng = snapshot.child("lng").getValue().toString();
+                myLocation = lat + "," + lng;
+                Log.d("hoan", lat + "," + lng);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        if (TextUtils.isEmpty(myLocation)) {
+            Toast.makeText(this, "Bạn không có quyền", Toast.LENGTH_SHORT).show();
+        } else {
+            String messageSendRef = "Message/" + messageSenderID + "/" + messageReceiverID;
+            String messageReceivedRef = "Message/" + messageReceiverID + "/" + messageSenderID;
+            DatabaseReference userMessageKeyRef = reference.child("Message").child(messageSenderID).child(messageReceivedRef).push();
+            String messagePushID = userMessageKeyRef.getKey();
+            Map messageTextBody = new HashMap();
+            messageTextBody.put("message", myLocation);
+            messageTextBody.put("type", checker);
+            messageTextBody.put("from", messageSenderID);
+            messageTextBody.put("to", messageReceiverID);
+            messageTextBody.put("messageID", messagePushID);
+            messageTextBody.put("isSeen", false);
+            messageTextBody.put("time", saveCurrentTime);
+            messageTextBody.put("date", saveCurrentDate);
+            Map messageBodyDetails = new HashMap();
+            messageBodyDetails.put(messageSendRef + "/" + messagePushID, messageTextBody);
+            messageBodyDetails.put(messageReceivedRef + "/" + messagePushID, messageTextBody);
+            reference.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(ChatsActivity.this, "tin nhắn đã gửi", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ChatsActivity.this, "tin nhắn đã gửi", Toast.LENGTH_SHORT).show();
+                    }
+                    edtMessage.setText("");
+                }
+            });
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Chats");
+            ref.child(messagePushID).setValue(messageTextBody).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                }
+            });
+        }
+    }
+
 
     private void seenMessage(final String userId) {
         referenceSeen = FirebaseDatabase.getInstance().getReference("Chats");
@@ -507,4 +583,6 @@ public class ChatsActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
