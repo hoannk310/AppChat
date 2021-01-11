@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nkh.appchat.ProfileFriend;
+import com.nkh.appchat.post.ProfileFriend;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;

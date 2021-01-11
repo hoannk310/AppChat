@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.post;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nkh.appchat.R;
 import com.nkh.appchat.adapter.UserAdapter;
 import com.nkh.appchat.model.User;
 
@@ -22,9 +24,11 @@ import java.util.List;
 
 public class PostLikeActivity extends AppCompatActivity {
     String postId;
+    FirebaseAuth auth;
+    String myId;
     private Toolbar toolbar;
     private RecyclerView rvLike;
-    private List<User>arrUsers;
+    private List<User> arrUsers;
     private UserAdapter adapter;
 
     @Override
@@ -33,7 +37,6 @@ public class PostLikeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post_like);
         Intent intent = getIntent();
         postId = intent.getStringExtra("postId");
-
 
         toolbar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(toolbar);
@@ -54,8 +57,8 @@ public class PostLikeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 arrUsers.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    String hisUid = ""+dataSnapshot.getRef().getKey();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String hisUid = "" + dataSnapshot.getRef().getKey();
                     getUser(hisUid);
                 }
             }
@@ -68,16 +71,22 @@ public class PostLikeActivity extends AppCompatActivity {
 
     }
 
-    private void getUser(String hisUid) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-        reference.orderByChild("id").equalTo(hisUid).addValueEventListener(new ValueEventListener() {
+    private void getUser(final String hisUid) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                arrUsers.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-                    arrUsers.add(user);
+
+                    if (user.getId() != null && user.getId().equals(hisUid)) {
+                        arrUsers.add(user);
+                    }
+
                 }
-                adapter =new UserAdapter(PostLikeActivity.this,arrUsers);
+                adapter = new UserAdapter(PostLikeActivity.this, arrUsers);
+                adapter.notifyDataSetChanged();
                 rvLike.setAdapter(adapter);
             }
 

@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.post;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nkh.appchat.chat.ChatsActivity;
+import com.nkh.appchat.R;
 import com.nkh.appchat.adapter.PostAdapter;
 import com.nkh.appchat.model.Post;
 import com.nkh.appchat.model.User;

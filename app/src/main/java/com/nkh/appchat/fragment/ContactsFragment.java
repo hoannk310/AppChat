@@ -22,7 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nkh.appchat.ChatsActivity;
+import com.nkh.appchat.chat.ChatsActivity;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.User;
 import com.squareup.picasso.Picasso;

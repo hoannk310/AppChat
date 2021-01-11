@@ -10,40 +10,26 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.Builder;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -52,8 +38,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nkh.appchat.adapter.TabsAccessorAdapter;
+import com.nkh.appchat.callvideo.CallActivity;
+import com.nkh.appchat.fragment.FingerprinFragment;
+import com.nkh.appchat.groupchat.GroupCreateActivity;
 import com.nkh.appchat.model.Tracking;
 import com.nkh.appchat.model.User;
+import com.nkh.appchat.post.NotificationActitvity;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -153,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void createLocationRequest() {
 
-       mLocationRequest = LocationRequest.create();
+        mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocationRequest.setSmallestDisplacement(DISTANCE);
@@ -186,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    if (checkPlayServices()){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (checkPlayServices()) {
                         buildGoogleApiClient();
                         createLocationRequest();
                         displayLocation();
@@ -325,6 +315,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.menu_addgroup:
                 startActivity(new Intent(MainActivity.this, GroupCreateActivity.class));
                 return true;
+            case R.id.menu_setting:
+                FingerprinFragment dialog = new FingerprinFragment();
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
+                return true;
             case R.id.menu_ffrient:
                 openFindFriends();
                 return true;
@@ -437,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             return;
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mgGoogleApiClient, mLocationRequest, this );
+        LocationServices.FusedLocationApi.requestLocationUpdates(mgGoogleApiClient, mLocationRequest, this);
 
     }
 

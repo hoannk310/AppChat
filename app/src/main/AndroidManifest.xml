@@ -35,25 +35,25 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".TrackingActivity"
+            android:name=".chat.TrackingActivity"
             android:label="@string/title_activity_tracking"></activity>
-        <activity android:name=".PostLikeActivity" />
-        <activity android:name=".NotificationActitvity" />
-        <activity android:name=".PostDetailActivity" />
-        <activity android:name=".AddStatusActivity" />
+        <activity android:name=".post.PostLikeActivity" />
+        <activity android:name=".post.NotificationActitvity" />
+        <activity android:name=".post.PostDetailActivity" />
+        <activity android:name=".post.AddStatusActivity" />
         <activity android:name=".ResetPassActivity" />
-        <activity android:name=".MediaGroupActivity" />
-        <activity android:name=".MediaActivity" />
-        <activity android:name=".VideoCallActivity" />
-        <activity android:name=".CallActivity" />
-        <activity android:name=".GroupEditActivity" />
+        <activity android:name=".groupchat.MediaGroupActivity" />
+        <activity android:name=".chat.MediaActivity" />
+        <activity android:name=".callvideo.VideoCallActivity" />
+        <activity android:name=".callvideo.CallActivity" />
+        <activity android:name=".groupchat.GroupEditActivity" />
         <activity android:name=".Test" />
-        <activity android:name=".GroupInforActivity" />
-        <activity android:name=".GroupParentAddActivity" />
-        <activity android:name=".GroupChatsActivity" />
-        <activity android:name=".GroupCreateActivity" />
-        <activity android:name=".ChatsActivity" />
-        <activity android:name=".ProfileFriend" />
+        <activity android:name=".groupchat.GroupInforActivity" />
+        <activity android:name=".groupchat.GroupParentAddActivity" />
+        <activity android:name=".groupchat.GroupChatsActivity" />
+        <activity android:name=".groupchat.GroupCreateActivity" />
+        <activity android:name=".chat.ChatsActivity" />
+        <activity android:name=".post.ProfileFriend" />
         <activity
             android:name=".FindFriendActivity"
             android:parentActivityName=".MainActivity" />

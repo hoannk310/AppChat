@@ -6,7 +6,6 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nkh.appchat.GroupChatsActivity;
+import com.nkh.appchat.groupchat.GroupChatsActivity;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Group;
 import com.squareup.picasso.Picasso;

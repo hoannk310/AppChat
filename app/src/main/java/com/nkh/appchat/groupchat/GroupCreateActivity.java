@@ -1,15 +1,13 @@
-package com.nkh.appchat;
+package com.nkh.appchat.groupchat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,7 +17,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nkh.appchat.R;
 
 import java.util.HashMap;
 
@@ -136,7 +134,7 @@ public class GroupCreateActivity extends AppCompatActivity {
         progressDialog.show();
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("groupId", "" + timeGroup);
-        hashMap.put("groupTitle", "" + groupTitle);
+        hashMap.put("groupTitle",  "" + groupTitle);
         hashMap.put("groupDescription", "" + groupDescription);
         hashMap.put("groupIcon", "" + groupIcon);
         hashMap.put("timestamp", "" + timeGroup);

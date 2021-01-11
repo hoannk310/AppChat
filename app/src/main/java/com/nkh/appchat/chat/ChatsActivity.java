@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,22 +13,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,12 +42,17 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.nkh.appchat.R;
 import com.nkh.appchat.adapter.MessagesAdapter;
+import com.nkh.appchat.callvideo.CallActivity;
 import com.nkh.appchat.model.Messages;
-import com.nkh.appchat.model.Tracking;
 import com.nkh.appchat.model.User;
+import com.nkh.appchat.post.ProfileFriend;
 import com.squareup.picasso.Picasso;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,9 +60,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatsActivity extends AppCompatActivity{
+public class ChatsActivity extends AppCompatActivity {
     private String messageReceiverID, userName, userImage, messageSenderID;
     private TextView chatName, chatLastSeen, chatSent;
     private FirebaseAuth auth;
@@ -84,6 +92,11 @@ public class ChatsActivity extends AppCompatActivity{
     private ValueEventListener seenLisener;
     private LocationManager locationManager;
     private String myLocation;
+
+    private byte encryptionKey[] = {9, 115, 51, 86, 105, 4, -31, -23, -60, 88, 17, 20, 3, -105, 119, -53};
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +220,7 @@ public class ChatsActivity extends AppCompatActivity{
                         }
                         if (which == 3) {
                             checker = "location";
-                                sendLocation();
+                            sendLocation();
                         }
 
 
@@ -227,13 +240,25 @@ public class ChatsActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
-        messagesAdapter = new MessagesAdapter(arrMessage,ChatsActivity.this);
+        messagesAdapter = new MessagesAdapter(arrMessage, ChatsActivity.this);
         rvChatsLayout = findViewById(R.id.rv_chat_layout);
         Context context;
         linearLayoutManager = new LinearLayoutManager(this);
         rvChatsLayout.setLayoutManager(linearLayoutManager);
         rvChatsLayout.setAdapter(messagesAdapter);
         displayLastSeen();
+
+
+        try {
+            cipher = Cipher.getInstance("AES");
+            decipher = Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
+
         reference.child("Message").child(messageSenderID).child(messageReceiverID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -516,6 +541,7 @@ public class ChatsActivity extends AppCompatActivity{
 
     private void sendMessager() {
         String messageText = edtMessage.getText().toString();
+        String messageAES = AESEncryptionMethor(messageText);
         if (TextUtils.isEmpty(messageText)) {
             Toast.makeText(this, "tin nhắn trống", Toast.LENGTH_SHORT).show();
         } else {
@@ -524,7 +550,7 @@ public class ChatsActivity extends AppCompatActivity{
             DatabaseReference userMessageKeyRef = reference.child("Message").child(messageSenderID).child(messageReceivedRef).push();
             String messagePushID = userMessageKeyRef.getKey();
             Map messageTextBody = new HashMap();
-            messageTextBody.put("message", messageText);
+            messageTextBody.put("message", messageAES);
             messageTextBody.put("type", "text");
             messageTextBody.put("from", messageSenderID);
             messageTextBody.put("to", messageReceiverID);
@@ -555,6 +581,31 @@ public class ChatsActivity extends AppCompatActivity{
                 }
             });
         }
+
+    }
+
+    private String AESEncryptionMethor(String string) {
+        byte[] stringByte = string.getBytes();
+        byte[] encryptedByte = new byte[stringByte.length];
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            encryptedByte = cipher.doFinal(stringByte);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        String returnString = null;
+        try {
+            returnString = new String(encryptedByte,"ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return returnString;
     }
 
     private void displayLastSeen() {

@@ -23,7 +23,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 public class RegisterActivity extends AppCompatActivity {
     private MaterialEditText userName, email, matkhau;
@@ -31,11 +40,24 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private DatabaseReference reference;
     private ProgressDialog progressDialog;
-
+    private byte encryptionKey[] = {9, 115, 51, 86, 105, 4, -31, -23, -60, 88, 17, 20, 3, -105, 119, -53};
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        try {
+            cipher = Cipher.getInstance("AES");
+            decipher = Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         Context context;
@@ -72,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void register(final String userName, final String email, String password) {
+    private void register(final String userName, final String email, final String password) {
         progressDialog.setTitle("Create New Account");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCanceledOnTouchOutside(true);
@@ -88,6 +110,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.e("hoan", "btnRegister2");
                     reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
+                    String passAES = AESEncryptionMethor(password);
                     String setStatus = "xin chào";
                     HashMap<String, String> hashMap = new HashMap<>();
                     hashMap.put("id", userid);
@@ -95,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                     hashMap.put("imageURL", "default");
                     hashMap.put("status", setStatus);
                     hashMap.put("email",email);
+                    hashMap.put("password",passAES);
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -113,5 +137,28 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private String AESEncryptionMethor(String string) {
+        byte[] stringByte = string.getBytes();
+        byte[] encryptedByte = new byte[stringByte.length];
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            encryptedByte = cipher.doFinal(stringByte);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        String returnString = null;
+        try {
+            returnString = new String(encryptedByte,"ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return returnString;
     }
 }

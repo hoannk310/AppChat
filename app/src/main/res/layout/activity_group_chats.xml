@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eee"
-    tools:context=".GroupChatsActivity">
+    tools:context=".groupchat.GroupChatsActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

@@ -1,16 +1,13 @@
-package com.nkh.appchat;
+package com.nkh.appchat.callvideo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.text.style.EasyEditSpan;
-import android.text.style.SubscriptSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -22,15 +19,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nkh.appchat.R;
 import com.opentok.android.OpentokError;
 import com.opentok.android.Publisher;
 import com.opentok.android.PublisherKit;
 import com.opentok.android.Session;
 import com.opentok.android.Stream;
 import com.opentok.android.Subscriber;
-
-import java.security.PublicKey;
-import java.util.logging.Logger;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;

@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.chat;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nkh.appchat.R;
 
 import java.text.DecimalFormat;
 

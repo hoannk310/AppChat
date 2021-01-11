@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.groupchat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -37,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nkh.appchat.R;
 import com.nkh.appchat.adapter.MessageGroupAdapter;
 import com.nkh.appchat.model.MessageGroup;
 import com.squareup.picasso.Picasso;

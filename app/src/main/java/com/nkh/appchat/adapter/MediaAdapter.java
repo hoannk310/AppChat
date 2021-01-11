@@ -17,9 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.FirebaseDatabase;
-import com.nkh.appchat.MediaActivity;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Image;
 import com.squareup.picasso.Picasso;

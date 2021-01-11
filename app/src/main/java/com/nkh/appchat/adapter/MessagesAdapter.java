@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +21,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nkh.appchat.R;
-import com.nkh.appchat.TrackingActivity;
+import com.nkh.appchat.chat.TrackingActivity;
 import com.nkh.appchat.model.Messages;
 import com.squareup.picasso.Picasso;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,6 +43,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private Context context;
     private FirebaseAuth auth;
     private DatabaseReference reference;
+
+    private byte encryptionKey[] = {9, 115, 51, 86, 105, 4, -31, -23, -60, 88, 17, 20, 3, -105, 119, -53};
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
 
     public MessagesAdapter(List<Messages> arrMessages, Context context) {
         this.arrMessages = arrMessages;
@@ -46,6 +58,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_message_layout, parent, false);
         auth = FirebaseAuth.getInstance();
+        try {
+            cipher = Cipher.getInstance("AES");
+            decipher = Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        secretKeySpec = new SecretKeySpec(encryptionKey, "AES");
         return new ViewHolder(view);
     }
 
@@ -90,7 +112,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 //                holder.chatSeen.setVisibility(View.VISIBLE);
                     holder.linearLayoutSend.setBackgroundResource(R.drawable.custum_mymesage);
                     holder.sendMessages.setTextColor(Color.BLACK);
-                    holder.sendMessages.setText(messages.getMessage());
+                    String messageAES = null;
+                    try {
+                        messageAES = AESDecryptionMethod(messages.getMessage());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    holder.sendMessages.setText(messageAES);
                     holder.tvTimeSend.setText(messages.getTime() + " " + messages.getDate());
 
 //                if (position == arrMessages.size() - 1) {
@@ -122,7 +150,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                     holder.sendMessages.setVisibility(View.INVISIBLE);
                     holder.linearLayoutRece.setBackgroundResource(R.drawable.custom_mesage);
                     holder.receiveMessages.setTextColor(Color.BLACK);
-                    holder.receiveMessages.setText(messages.getMessage());
+                   // holder.receiveMessages.setText(messages.getMessage());
+                    String messageAES = null;
+                    try {
+                        messageAES = AESDecryptionMethod(messages.getMessage());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    holder.receiveMessages.setText(messageAES);
                     holder.tvTimeReceive.setText(messages.getTime() + " " + messages.getDate());
                 }
                 break;
@@ -141,7 +176,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                     holder.tvTimeSend.setVisibility(View.INVISIBLE);
                     holder.linearLayoutSend.setVisibility(View.INVISIBLE);
                     Picasso.get().load(messages.getMessage()).into(holder.messageReceiverPicture);
-                    holder.tvTimeSend.setText(messages.getTime() + " " + messages.getDate());
+                    holder.tvTimeReceive.setText(messages.getTime() + " " + messages.getDate());
                 }
 
                 break;
@@ -242,6 +277,25 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         }
 
+    }
+    private String AESDecryptionMethod(String string) throws UnsupportedEncodingException {
+        byte[] EncryptedByte = string.getBytes("ISO-8859-1");
+        String decryptedString = string;
+
+        byte[] decryption;
+
+        try {
+            decipher.init(cipher.DECRYPT_MODE, secretKeySpec);
+            decryption = decipher.doFinal(EncryptedByte);
+            decryptedString = new String(decryption);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return decryptedString;
     }
 
     @Override

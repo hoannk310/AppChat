@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.post;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,7 +45,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
-import java.util.Queue;
 
 public class AddStatusActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 100;

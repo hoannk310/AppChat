@@ -1,4 +1,4 @@
-package com.nkh.appchat;
+package com.nkh.appchat.groupchat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nkh.appchat.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;

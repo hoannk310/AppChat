@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nkh.appchat.PostDetailActivity;
+import com.nkh.appchat.post.PostDetailActivity;
 import com.nkh.appchat.R;
 import com.nkh.appchat.model.Notification;
 import com.squareup.picasso.Picasso;

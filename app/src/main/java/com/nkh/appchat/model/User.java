@@ -6,21 +6,14 @@ public class User {
     private String imageURL;
     private String status;
     private String email;
+    private String password;
 
-    public String getEmail() {
-        return email;
+    public String getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public User(String id, String userName, String imageURL, String status, String email) {
+    public void setId(String id) {
         this.id = id;
-        this.userName = userName;
-        this.imageURL = imageURL;
-        this.status = status;
-        this.email = email;
     }
 
     public String getUserName() {
@@ -31,6 +24,14 @@ public class User {
         this.userName = userName;
     }
 
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -39,24 +40,31 @@ public class User {
         this.status = status;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public User() {
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    public User(String id, String userName, String imageURL, String status, String email, String password) {
         this.id = id;
-    }
-
-
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
+        this.userName = userName;
         this.imageURL = imageURL;
+        this.status = status;
+        this.email = email;
+        this.password = password;
     }
 }
